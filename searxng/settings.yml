@@ -1,0 +1,17 @@
+use_default_settings: true
+
+server:
+  secret_key: "strudel-searxng-secret-key-2025"
+  bind_address: "0.0.0.0"
+
+search:
+  safe_search: 0
+  autocomplete: ""
+
+engines:
+  - name: google
+    disabled: false
+  - name: bing
+    disabled: false
+  - name: duckduckgo
+    disabled: false
