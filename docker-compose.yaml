@@ -65,7 +65,7 @@ services:
       - traefik.http.routers.firecrawl.entrypoints=https
       - traefik.http.routers.firecrawl.tls.certresolver=letsencrypt
       - traefik.http.routers.firecrawl.service=firecrawl-service
-      - traefik.http.services.firecrawl-service.loadbalancer.server.port=${PORT}
+      - traefik.http.services.firecrawl-service.loadbalancer.server.port=3002
 
   firecrawl-redis:
     image: 'redis:alpine'
