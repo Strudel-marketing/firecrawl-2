@@ -13,9 +13,9 @@ x-common-service: &common-service
     - 'host.docker.internal:host-gateway'
 
 x-common-env: &common-env
-  REDIS_URL: 'redis://:${REDIS_PASSWORD}@firecrawl-redis:6379'
-  REDIS_RATE_LIMIT_URL: 'redis://:${REDIS_PASSWORD}@firecrawl-redis:6379'
-  PLAYWRIGHT_MICROSERVICE_URL: '${PLAYWRIGHT_MICROSERVICE_URL:-http://firecrawl-playwright:3000/scrape}'
+  REDIS_URL: '${REDIS_URL}'
+  REDIS_RATE_LIMIT_URL: '${REDIS_RATE_LIMIT_URL}'
+  PLAYWRIGHT_MICROSERVICE_URL: '${PLAYWRIGHT_MICROSERVICE_URL}'
   NUQ_DATABASE_URL: '${NUQ_DATABASE_URL}'
   USE_DB_AUTHENTICATION: '${USE_DB_AUTHENTICATION}'
   OPENAI_API_KEY: '${OPENAI_API_KEY}'
@@ -36,10 +36,9 @@ x-common-env: &common-env
   PROXY_SERVER: '${PROXY_SERVER}'
   PROXY_USERNAME: '${PROXY_USERNAME}'
   PROXY_PASSWORD: '${PROXY_PASSWORD}'
-  # SearXNG Configuration (NEW!)
-  SEARXNG_ENDPOINT: '${SEARXNG_ENDPOINT:-http://firecrawl-searxng:8080}'
-  SEARXNG_ENGINES: '${SEARXNG_ENGINES:-google,bing,duckduckgo}'
-  SEARXNG_CATEGORIES: '${SEARXNG_CATEGORIES:-general}'
+  SEARXNG_ENDPOINT: '${SEARXNG_ENDPOINT}'
+  SEARXNG_ENGINES: '${SEARXNG_ENGINES}'
+  SEARXNG_CATEGORIES: '${SEARXNG_CATEGORIES}'
 
 services:
   api:
@@ -47,17 +46,17 @@ services:
     container_name: firecrawl-api
     environment:
       <<: *common-env
-      HOST: 0.0.0.0
-      PORT: '${INTERNAL_PORT:-3002}'
-      WORKER_PORT: '${WORKER_PORT:-3005}'
-      ENV: production
+      HOST: '${HOST}'
+      PORT: '${PORT}'
+      WORKER_PORT: '${WORKER_PORT}'
+      ENV: '${ENV}'
     depends_on:
       - firecrawl-redis
       - firecrawl-playwright
       - firecrawl-postgres
       - firecrawl-searxng
     ports:
-      - '${PORT:-3002}:${INTERNAL_PORT:-3002}'
+      - '${PORT}:${PORT}'
     command: 'node dist/src/harness.js --start-docker'
     labels:
       - traefik.enable=true
@@ -66,7 +65,7 @@ services:
       - traefik.http.routers.firecrawl.entrypoints=https
       - traefik.http.routers.firecrawl.tls.certresolver=letsencrypt
       - traefik.http.routers.firecrawl.service=firecrawl-service
-      - traefik.http.services.firecrawl-service.loadbalancer.server.port=3002
+      - traefik.http.services.firecrawl-service.loadbalancer.server.port=${PORT}
 
   firecrawl-redis:
     image: 'redis:alpine'
@@ -86,9 +85,9 @@ services:
     build: apps/nuq-postgres
     container_name: firecrawl-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${POSTGRES_DB}'
     networks:
       - backend
     command:
@@ -100,7 +99,7 @@ services:
     build: apps/playwright-service-ts
     container_name: firecrawl-playwright
     environment:
-      PORT: 3000
+      PORT: '${PLAYWRIGHT_PORT}'
       PROXY_SERVER: '${PROXY_SERVER}'
       PROXY_USERNAME: '${PROXY_USERNAME}'
       PROXY_PASSWORD: '${PROXY_PASSWORD}'
@@ -108,12 +107,11 @@ services:
     networks:
       - backend
 
-  # NEW: SearXNG for /search endpoint
   firecrawl-searxng:
     image: searxng/searxng:latest
     container_name: firecrawl-searxng
     environment:
-      - SEARXNG_BASE_URL=http://firecrawl-searxng:8080
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
     volumes:
       - ./searxng:/etc/searxng:rw
     networks:
