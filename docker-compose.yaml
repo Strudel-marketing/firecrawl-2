@@ -16,7 +16,7 @@ x-common-env: &common-env
   REDIS_URL: 'redis://:${REDIS_PASSWORD}@firecrawl-redis:6379'
   REDIS_RATE_LIMIT_URL: 'redis://:${REDIS_PASSWORD}@firecrawl-redis:6379'
   PLAYWRIGHT_MICROSERVICE_URL: '${PLAYWRIGHT_MICROSERVICE_URL:-http://firecrawl-playwright:3000/scrape}'
-  NUQ_DATABASE_URL: 'postgres://postgres:postgres@firecrawl-postgres:5432/postgres'
+  NUQ_DATABASE_URL: '${NUQ_DATABASE_URL}'
   USE_DB_AUTHENTICATION: '${USE_DB_AUTHENTICATION}'
   OPENAI_API_KEY: '${OPENAI_API_KEY}'
   OPENAI_BASE_URL: '${OPENAI_BASE_URL}'
