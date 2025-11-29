@@ -55,14 +55,6 @@ services:
     ports:
       - '${PORT}:${PORT}'
     command: 'node dist/src/harness.js --start-docker'
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=coolify
-      - 'traefik.http.routers.firecrawl.rule=Host(`firecrawl.strudel.marketing`)'
-      - traefik.http.routers.firecrawl.entrypoints=https
-      - traefik.http.routers.firecrawl.tls.certresolver=letsencrypt
-      - traefik.http.routers.firecrawl.service=firecrawl-service
-      - traefik.http.services.firecrawl-service.loadbalancer.server.port=3002
   firecrawl-redis:
     image: 'redis:alpine'
     container_name: firecrawl-redis
